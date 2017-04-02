@@ -1,22 +1,12 @@
 FILE = "spec/data/debug.bc"
 
-run: build_release
-	./bin/stackvm $(FILE)
-
-debug: build_debug
-	./bin/stackvm $(FILE)
-
-build_release: prepare
-	crystal build src/stackvm.cr --release -o bin/stackvm
-
-build_debug: prepare
-	crystal build src/stackvm.cr -o bin/stackvm
-
-prepare:
+stackvm:
 	mkdir -p bin
+	crystal build src/stackvm.cr -o bin/stackvm --error-trace
 
-test:
-	crystal spec --error-trace
+asm:
+	mkdir -p bin
+	crystal build src/assembler.cr -o bin/asm --error-trace
 
 clean:
 	find . -name "**/.DS_Store" | xargs rm
