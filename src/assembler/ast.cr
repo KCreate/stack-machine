@@ -1,13 +1,33 @@
 module Assembler
 
+  # Base class of all ast nodes
+  class ASTNode
+  end
+
   # Represents a single module
   #
   # A module is a collection of blocks and constants
-  class Module
+  class Module < ASTNode
     getter blocks : Array(Block)
     getter constants : Array(Constant)
 
     def initialize(@blocks = [] of Block, @constants = [] of Constant)
+    end
+
+    def to_s(io)
+      str = String.build do |str|
+        str.puts "Blocks[#{@blocks.size}]:"
+        @blocks.each do |block|
+          str.puts block.to_s.indent(2, " ")
+        end
+
+        str.puts "Constants[#{@constants.size}]:"
+        @constants.each do |constant|
+          str.puts constant.to_s.indent(2, " ")
+        end
+      end
+
+      io << str
     end
   end
 
@@ -20,7 +40,7 @@ module Assembler
   #   add r0, r0, r1            |
   #   rpush r0                <-+
   # ```
-  class Block
+  class Block < ASTNode
     getter label : Label
     getter instructions : Array(Instruction)
 
@@ -43,7 +63,7 @@ module Assembler
   #  |
   #  +- this is also a label
   # ```
-  class Label
+  class Label < ASTNode
     getter name : String
 
     def initialize(@name)
@@ -59,7 +79,7 @@ module Assembler
   #   |
   #   +- This is the instruction
   # ```
-  class Instruction
+  class Instruction < ASTNode
     getter mnemonic : String
     getter arguments : Array(Argument)
 
@@ -68,7 +88,7 @@ module Assembler
   end
 
   # Base class of all arguments
-  class Argument
+  class Argument < ASTNode
   end
 
   # Represents a single register
@@ -125,10 +145,19 @@ module Assembler
 
     def initialize(@value)
     end
+
+    def to_s(io)
+      io << @value
+    end
   end
 
   # Base class for all immediate values
-  class Value < Argument
+  abstract class Value < Argument
+    abstract def value
+
+    def to_s(io)
+      io << value
+    end
   end
 
   # Represents a single integer
@@ -191,9 +220,9 @@ module Assembler
   # .mybytes 5 [0, 1, 2, 3, 4] <-+
   # ```
   class ByteArray < Value
-    getter bytes = Array(Int8)
+    getter value : Array(Int8)
 
-    def initialize(@bytes = [] of Int8)
+    def initialize(@value = [] of Int8)
     end
   end
 
@@ -205,12 +234,20 @@ module Assembler
   # .myname string "hello world"
   # .mybytes 5 [0, 1, 2, 3, 4]
   # ```
-  class Constant
+  class Constant < ASTNode
     getter name : String
     getter type : SizeSpecifier | Int32
     getter value : Value
 
     def initialize(@name, @type, @value)
+    end
+
+    def to_s(io)
+      str = String.build do |str|
+        str.puts "#{@name} : #{@type} : #{@value}"
+      end
+
+      io << str
     end
   end
 end

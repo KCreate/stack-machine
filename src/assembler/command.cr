@@ -59,28 +59,25 @@ module Assembler
         return
       end
 
-      size = File.size filename
-      source = Bytes.new size
-      File.open filename do |io|
-        io.read source
-      end
+      content = File.read filename
 
-      Builder.build(source) do |errors, warnings, result|
-        if errors.size > 0
-          errors.each do |err|
-            error err
-          end
-        end
-
+      Builder.build content do |errors, warnings, result|
         if warnings.size > 0
           warnings.each do |war|
             warning war
           end
         end
 
+        if errors.size > 0
+          errors.each do |err|
+            error err
+          end
+        end
+
         return unless errors.size == 0 && warnings.size == 0
 
-        success "Built", filename
+        success "Built", "#{filename}"
+        success "Result", "\n#{result}"
       end
     end
 
