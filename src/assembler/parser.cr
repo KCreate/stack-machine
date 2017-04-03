@@ -68,7 +68,7 @@ module Assembler
         expect :newline
         read_token
 
-        until @token.type == :label || @token.type == :dot
+        until @token.type == :label || @token.type == :dot || @token.type == :EOF
           next read_token if @token.type == :newline
           block.instructions << parse_instruction
         end
