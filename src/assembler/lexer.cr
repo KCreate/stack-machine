@@ -68,6 +68,9 @@ module Assembler
         read :rightbracket
       when ';'
         consume_comment
+      when '-'
+        read
+        consume_numeric
       when '0'..'9'
         consume_numeric
       when '\r'
