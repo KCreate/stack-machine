@@ -133,6 +133,10 @@ module Assembler
         value = @token.value
         read_token
         return Label.new value
+      when :size
+        value = @token.value
+        read_token
+        return SizeSpecifier.new value
       else
         return parse_value
       end
@@ -182,7 +186,7 @@ module Assembler
 
         return array
       else
-        raise error "unexpected token: #{@token}, expected a numeric or size specifier"
+        raise error "unexpected token: #{@token}, expected a value"
       end
     end
 

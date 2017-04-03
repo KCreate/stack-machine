@@ -3,6 +3,7 @@
 main:
   nop
   add r0, r1, r2
+  nop word
   loadi ipd, ipw, ipb
   loadi r0, qword, 55
 
@@ -13,5 +14,5 @@ _add:
 
 .foo qword 25
 .bar byte 25
-.baz 5 [1, 2, 3, 4, 5]
+.baz 5 [1, 2, 3, 4, 20]
 
