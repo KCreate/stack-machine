@@ -1,2 +1,9 @@
-.myconstant word 25
-.myotherconstant byte 50
+main:
+  loadi
+  add
+
+_add:
+  loadi
+  add
+
+.myconstant qword 5

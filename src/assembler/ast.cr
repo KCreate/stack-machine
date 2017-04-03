@@ -46,6 +46,18 @@ module Assembler
 
     def initialize(@label, @instructions = [] of Instruction)
     end
+
+    def to_s(io)
+      str = String.build do |str|
+        str.puts "#{@label}:"
+
+        @instructions.each do |instruction|
+          str.puts "#{instruction}".indent(2, " ")
+        end
+      end
+
+      io << str
+    end
   end
 
   # Represents a single label
@@ -68,6 +80,10 @@ module Assembler
 
     def initialize(@name)
     end
+
+    def to_s(io)
+      io << @name
+    end
   end
 
   # Represents a single instruction
@@ -84,6 +100,18 @@ module Assembler
     getter arguments : Array(Argument)
 
     def initialize(@mnemonic, @arguments = [] of Argument)
+    end
+
+    def to_s(io)
+      str = String.build do |str|
+        str << "#{@mnemonic} "
+
+        @arguments.each do |argument|
+          str << "#{argument} "
+        end
+      end
+
+      io << str
     end
   end
 

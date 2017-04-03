@@ -4,6 +4,18 @@ require "./token.cr"
 
 module Assembler
   REGISTERS = [] of String
+  SIZE = ["qword", "dword", "word", "byte"]
+  INSTRUCTIONS = [
+    "rpush", "rpop", "mov", "loadi", "rst",
+    "add", "sub", "mul", "div", "idiv", "rem", "irem",
+    "fadd", "fsub", "fmul", "fdiv", "frem", "fexp",
+    "cmp", "lt", "gt", "ult", "ugt",
+    "shr", "shl", "and", "xor", "nand", "or", "not",
+    "load", "loadr", "pushs", "loads", "store",
+    "read", "readc", "reads", "readcs", "write", "writec", "writes", "writecs", "copy", "copyc",
+    "jz", "jzr", "jmp", "jmpr", "call", "callr", "ret",
+    "nop", "syscall"
+  ]
 
   # General purpose registers
   0.upto 59 do |i|
@@ -48,6 +60,8 @@ module Assembler
         read :colon
       when '.'
         read :dot
+      when ','
+        read :comma
       when ';'
         consume_comment
       when '0'..'9'
@@ -78,7 +92,6 @@ module Assembler
 
     private def consume_numeric
       passed_underscore = false
-      floating_point = false
 
       loop do
         case read
@@ -91,33 +104,13 @@ module Assembler
         end
       end
 
-      if current_char == '.' && peek.number?
-        read
-
-        loop do
-          case read
-          when .number?
-            # nothing to do
-          when '_'
-            passed_underscore = true
-          else
-            break
-          end
-        end
-      end
-
       number_value = @frame.to_s[0..-2]
 
       if passed_underscore
         number_value = number_value.tr "_", ""
       end
 
-      if floating_point
-        @token.type = :numeric_float
-      else
-        @token.type = :numeric_int
-      end
-
+      @token.type = :numeric_int
       @token.value = number_value
     end
 
@@ -157,22 +150,19 @@ module Assembler
       end
 
       @token.value = @frame.to_s[0..-2]
+      @token.type = :label
 
-      case @token.value
-      when "byte"
+      if SIZE.includes? @token.value
         @token.type = :size
-      when "word"
-        @token.type = :size
-      when "dword"
-        @token.type = :size
-      when "qword"
-        @token.type = :size
-      when "string"
-        @token.type = :size
-      else
-        @token.type = :label
       end
 
+      if REGISTERS.includes? @token.value
+        @token.type = :register
+      end
+
+      if INSTRUCTIONS.includes? @token.value
+        @token.type = :instruction
+      end
     end
 
     private def label_start(char)

@@ -24,6 +24,8 @@ module Assembler
         read_token
       when :comment
         read_token
+      when :newline
+        read_token
       else
         token
       end
@@ -60,13 +62,34 @@ module Assembler
         label = expect :label
         size = parse_size_specifier
         value = parse_value
-        expect :newline
+        read_token
+        return Constant.new label.value, size, value
+      when :label
+        label = Label.new @token.value
+
+        expect :colon
         read_token
 
-        return Constant.new label.value, size, value
+        block = Block.new label
+
+        while @token.type == :instruction
+          block.instructions << parse_instruction
+        end
+
+        return block
       else
         raise error "unexpected token: #{@token}"
       end
+    end
+
+    # Parses a single instruction
+    def parse_instruction
+      mnemonic = @token
+      instruction = Instruction.new mnemonic.value
+
+      read_token
+
+      instruction
     end
 
     # Parses a single size specifier
@@ -90,10 +113,6 @@ module Assembler
       case token.type
       when :numeric_int
         return IntegerValue.new parse_numeric_i64(token.value).to_u64
-      when :numeric_float_f32
-        return Float32Value.new parse_numeric_f32(token.value)
-      when :numeric_float_f64
-        return Float64Value.new parse_numeric_f64(token.value)
       else
         raise error "unexpected token: #{token}, expected a numeric or size specifier"
       end
@@ -105,28 +124,6 @@ module Assembler
 
       unless num
         raise error "could not convert #{value} to i64"
-      end
-
-      num
-    end
-
-    # Tries to parse a f64 value
-    def parse_numeric_f64(value : String)
-      num = value.to_f64?
-
-      unless num
-        raise error "could not convert #{value} to f64"
-      end
-
-      num
-    end
-
-    # Tries to parse a f32 value
-    def parse_numeric_f32(value : String)
-      num = value.to_f32?
-
-      unless num
-        raise error "could not convert #{value} to f32"
       end
 
       num
