@@ -8,8 +8,8 @@ module Assembler
   #
   # A module is a collection of blocks and constants
   class Module < ASTNode
-    getter blocks : Array(Block)
-    getter constants : Array(Constant)
+    property blocks : Array(Block)
+    property constants : Array(Constant)
 
     def initialize(@blocks = [] of Block, @constants = [] of Constant)
     end

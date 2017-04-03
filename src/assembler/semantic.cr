@@ -32,14 +32,17 @@ module Assembler
       constants = @mod.constants
       visited = [] of String
 
-      constants.each do |constant|
+      @mod.constants = constants.reverse.reject do |constant|
         name = constant.name
         already_declared = visited.includes? name
+
         if already_declared
           @warnings << "Duplicate constant definition: #{name}"
-        else
-          visited << name
+          next true
         end
+
+        visited << name
+        false
       end
     end
 
@@ -81,14 +84,17 @@ module Assembler
       blocks = @mod.blocks
       visited = [] of String
 
-      blocks.each do |block|
+      @mod.blocks = blocks.reverse.reject do |block|
         name = block.label.name
         already_declared = visited.includes? name
+
         if already_declared
           @warnings << "Duplicate block definition: #{name}"
-        else
-          visited << name
+          next true
         end
+
+        visited << name
+        false
       end
     end
 

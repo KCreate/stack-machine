@@ -61,7 +61,7 @@ module Assembler
 
       content = File.read filename
 
-      Builder.build content do |errors, warnings, result|
+      Builder.build content do |warnings, errors, result|
         if warnings.size > 0
           warnings.each do |war|
             warning war
@@ -74,7 +74,7 @@ module Assembler
           end
         end
 
-        return unless errors.size == 0 && warnings.size == 0
+        return unless errors.size == 0
 
         success "Built", "#{filename}"
         success "Result", "\n#{result}"

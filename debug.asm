@@ -1,5 +1,10 @@
 main:
-  loadi r0, qword, 25
-  loadi r1, qword, 25
-  add r0, r0, r1
-  store -5, r0
+  loadi r0b, byte, 0 ; exit code
+  loadi r1b, byte, 0 ; exit
+  rpush r0b
+  rpush r1b
+  syscall
+
+.foo qword 25
+.foo qword 30
+
