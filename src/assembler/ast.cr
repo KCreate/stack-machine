@@ -219,10 +219,10 @@ module Assembler
 
     # Returns the minimum amount of bytes required to contain this value
     def required_bytes
-      return 1 if @value <= (2 ** 8) - 1 # byte
-      return 2 if @value <= (2 ** 16) - 1 # word
-      return 4 if @value <= (2 ** 32) - 1 # dword
-      return 8 if @value <= (2 ** 64) - 1 # qword
+      return 1 if @value <= (2_u64 ** 8) - 1 # byte
+      return 2 if @value <= (2_u64 ** 16) - 1 # word
+      return 4 if @value <= (2_u64 ** 32) - 1 # dword
+      return 8
     end
   end
 
@@ -285,11 +285,7 @@ module Assembler
     end
 
     def to_s(io)
-      str = String.build do |str|
-        str.puts "#{@name} : #{@type} : #{@value}"
-      end
-
-      io << str
+      io << "#{@name} : #{@type} : #{@value}"
     end
   end
 end

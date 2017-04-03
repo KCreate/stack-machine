@@ -1,4 +1,5 @@
 require "./parser.cr"
+require "./semantic.cr"
 
 module Assembler
 
@@ -24,6 +25,11 @@ module Assembler
       parse_tree = Parser.parse source do |parser|
         parser.warnings.each { |warning| @warnings << warning }
         parser.errors.each { |error| @errors << error }
+      end
+
+      Semantic.analyse parse_tree do |warnings, errors|
+        warnings.each { |warning| @warnings << warning }
+        errors.each { |error| @errors << error }
       end
 
       parse_tree

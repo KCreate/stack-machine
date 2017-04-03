@@ -101,7 +101,7 @@ module Assembler
     end
 
     private def warning(message)
-      puts "#{"Warning:".colorize(:orange).bold} #{message}"
+      puts "#{"Warning:".colorize(:yellow).bold} #{message}"
     end
 
     private def success(status, message)
