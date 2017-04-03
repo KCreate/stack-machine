@@ -62,6 +62,10 @@ module Assembler
         read :dot
       when ','
         read :comma
+      when '['
+        read :leftbracket
+      when ']'
+        read :rightbracket
       when ';'
         consume_comment
       when '0'..'9'

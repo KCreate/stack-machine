@@ -133,12 +133,8 @@ module Assembler
         value = @token.value
         read_token
         return Label.new value
-      when :numeric_int
-        value = @token.value
-        read_token
-        return IntegerValue.new parse_numeric_i64(value).to_u64
       else
-        raise error "unexpected token: #{@token}, expected an argument"
+        return parse_value
       end
     end
 
@@ -165,8 +161,28 @@ module Assembler
         value = parse_numeric_i64(token.value).to_u64
         read_token
         return IntegerValue.new value
+      when :leftbracket
+        read_token
+
+        array = ByteArray.new
+
+        until @token.type == :rightbracket
+          assert :numeric_int
+          value = parse_numeric_i64(@token.value).to_i8
+          array.value << value
+
+          read_token
+          unless @token.type == :comma
+            break
+          end
+          skip :comma
+        end
+
+        skip :rightbracket
+
+        return array
       else
-        raise error "unexpected token: #{token}, expected a numeric or size specifier"
+        raise error "unexpected token: #{@token}, expected a numeric or size specifier"
       end
     end
 
