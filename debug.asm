@@ -6,5 +6,4 @@ main:
   syscall
 
 .foo qword 25
-.foo qword 30
 

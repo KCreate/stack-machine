@@ -24,7 +24,9 @@ module Assembler
       check_duplicate_constants
       check_constant_size
       check_duplicate_blocks
+      check_duplicate_labels
       check_instruction_arguments
+      check_undefined_labels
     end
 
     # Checks the module for duplicate constant definitions
@@ -37,7 +39,7 @@ module Assembler
         already_declared = visited.includes? name
 
         if already_declared
-          @warnings << "Duplicate constant definition: #{name}"
+          @errors << "duplicate constant definition: #{name}"
           next true
         end
 
@@ -74,7 +76,7 @@ module Assembler
             @errors << "#{value} doesn't fit into #{byte_count} bytes"
           end
         else
-          @errors << "Bug: unknown value type: #{value.class}"
+          @errors << "bug: unknown value type: #{value.class}"
         end
       end
     end
@@ -89,12 +91,31 @@ module Assembler
         already_declared = visited.includes? name
 
         if already_declared
-          @warnings << "Duplicate block definition: #{name}"
+          @errors << "duplicate block definition: #{name}"
           next true
         end
 
         visited << name
         false
+      end
+    end
+
+    # Checks the module for duplicate label definitions
+    private def check_duplicate_labels
+      blocks = @mod.blocks
+      constants = @mod.constants
+      visited = [] of String
+
+      blocks.each do |block|
+        visited << block.label.name
+      end
+
+      constants.each do |constant|
+        if visited.includes? constant.name
+          @errors << "duplicate label definition: #{constant.name}"
+        end
+
+        visited << constant.name
       end
     end
 
