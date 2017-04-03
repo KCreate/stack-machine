@@ -136,7 +136,8 @@ module Assembler
       when :size
         value = @token.value
         read_token
-        return SizeSpecifier.new value
+        byte_count = SizeSpecifier.new(value).byte_count.to_u64
+        return IntegerValue.new byte_count
       else
         return parse_value
       end
@@ -148,7 +149,7 @@ module Assembler
       when :size
         value = @token.value
         read_token
-        return SizeSpecifier.new value
+        return SizeSpecifier.new(value).byte_count.to_i32
       when :numeric_int
         value = parse_numeric_i64(@token.value).to_i32
         read_token

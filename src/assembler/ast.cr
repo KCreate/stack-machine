@@ -191,6 +191,18 @@ module Assembler
     def to_s(io)
       io << @value
     end
+
+    # Returns the amount of bytes this size specifier stands for
+    def byte_count
+      case @value
+      when "qword" then 8
+      when "dword" then 4
+      when "word" then 2
+      when "byte" then 1
+      else
+        0
+      end
+    end
   end
 
   # Base class for all immediate values
