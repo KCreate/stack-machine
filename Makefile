@@ -1,5 +1,11 @@
 FILE = "spec/data/debug.bc"
 
+run_stackvm: stackvm
+	bin/stackvm
+
+run_asm: asm
+	bin/asm build debug.asm
+
 stackvm:
 	mkdir -p bin
 	crystal build src/stackvm.cr -o bin/stackvm --error-trace
