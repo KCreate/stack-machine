@@ -214,7 +214,7 @@ insufficient size, the machine will crash
 | `jmpr`  | offset      | Jump to `[offset]`                                                  |
 | `call`  | offset      | Push a stack frame and jump to `offset`                             |
 | `callr` | offset      | Push a stack frame and jump to `[offset]`                           |
-| `ret`   | offset      | Return from the current stack frame                                 |
+| `ret`   |             | Return from the current stack frame                                 |
 
 ## Miscellaneous instructions
 
