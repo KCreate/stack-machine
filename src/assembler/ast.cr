@@ -60,32 +60,6 @@ module Assembler
     end
   end
 
-  # Represents a single label
-  #
-  # ```
-  # main: <- this is the label
-  #   add r0, r1, r2
-  #   call add
-  #        ^
-  #        |
-  #        +- this can also be a label
-  #
-  # .myconstant qword 25
-  #  ^
-  #  |
-  #  +- this is also a label
-  # ```
-  class Label < ASTNode
-    getter name : String
-
-    def initialize(@name)
-    end
-
-    def to_s(io)
-      io << @name
-    end
-  end
-
   # Represents a single instruction
   #
   # ```
@@ -106,8 +80,12 @@ module Assembler
       str = String.build do |str|
         str << "#{@mnemonic} "
 
-        @arguments.each do |argument|
-          str << "#{argument} "
+        @arguments.each_with_index do |argument, index|
+          str << "#{argument}"
+
+          unless index == @arguments.size - 1
+            str << ", "
+          end
         end
       end
 
@@ -117,6 +95,32 @@ module Assembler
 
   # Base class of all arguments
   class Argument < ASTNode
+  end
+
+  # Represents a single label
+  #
+  # ```
+  # main: <- this is the label
+  #   add r0, r1, r2
+  #   call add
+  #        ^
+  #        |
+  #        +- this can also be a label
+  #
+  # .myconstant qword 25
+  #  ^
+  #  |
+  #  +- this is also a label
+  # ```
+  class Label < Argument
+    getter name : String
+
+    def initialize(@name)
+    end
+
+    def to_s(io)
+      io << @name
+    end
   end
 
   # Represents a single register
@@ -141,6 +145,16 @@ module Assembler
     getter mode : Int32
 
     def initialize(@name, @mode = 0)
+    end
+
+    def to_s(io)
+      mode = case @mode
+             when 0 then ""
+             when 1 then "d"
+             when 2 then "w"
+             when 3 then "b"
+             end
+      io << "#{@name}#{mode}"
     end
   end
 

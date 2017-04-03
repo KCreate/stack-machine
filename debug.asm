@@ -1,9 +1,16 @@
+.foo word 25
+
 main:
-  loadi
-  add
+  nop
+  add r0, r1, r2
+  loadi ipd, ipw, ipb
+
+.foo word 25
 
 _add:
-  loadi
-  add
+  rpush 25
 
-.myconstant qword 5
+.foo qword 25
+.bar byte 25
+.baz 2 1
+

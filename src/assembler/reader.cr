@@ -27,14 +27,15 @@ module Assembler
 
       @buffer << char
       @frame << char
-      @current_char = char
 
-      if char == '\n'
+      if current_char == '\n'
         @row += 1
         @column = 1
       else
         @column += 1
       end
+
+      @current_char = char
 
       char
     end

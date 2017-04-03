@@ -184,13 +184,13 @@ module Assembler
     end
 
     private def warning(message)
-      msg = "#{@row}:#{@column}: #{message}"
+      msg = "#{@token.row}:#{@token.column}: #{message}"
       @warnings << msg
       msg
     end
 
     private def error(message)
-      msg = "#{@row}:#{@column}: #{message}"
+      msg = "#{@token.row}:#{@token.column}: #{message}"
       @errors << msg
       msg
     end

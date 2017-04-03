@@ -24,8 +24,6 @@ module Assembler
         read_token
       when :comment
         read_token
-      when :newline
-        read_token
       else
         token
       end
@@ -40,6 +38,7 @@ module Assembler
       mod = Module.new
 
       until @token.type == :EOF
+        next read_token if @token.type == :newline
         statement = parse_statement
 
         case statement
@@ -59,20 +58,18 @@ module Assembler
     def parse_statement
       case @token.type
       when :dot
-        label = expect :label
-        size = parse_size_specifier
-        value = parse_value
-        read_token
-        return Constant.new label.value, size, value
+        expect :label
+        return parse_constant
       when :label
         label = Label.new @token.value
-
-        expect :colon
-        read_token
-
         block = Block.new label
 
-        while @token.type == :instruction
+        expect :colon
+        expect :newline
+        read_token
+
+        until @token.type == :label || @token.type == :dot
+          next read_token if @token.type == :newline
           block.instructions << parse_instruction
         end
 
@@ -82,37 +79,92 @@ module Assembler
       end
     end
 
+    # Parses a single constant definition
+    def parse_constant
+      label = @token.value
+      read_token
+      size = parse_size_specifier
+      value = parse_value
+      skip :newline
+
+      Constant.new label, size, value
+    end
+
     # Parses a single instruction
     def parse_instruction
-      mnemonic = @token
-      instruction = Instruction.new mnemonic.value
+      assert :instruction
+      instruction = Instruction.new @token.value
 
       read_token
 
+      until @token.type == :newline
+        instruction.arguments << parse_argument
+        unless @token.type == :comma
+          break
+        end
+        skip :comma
+      end
+
+      skip :newline
       instruction
+    end
+
+    # Parse a single argument to an instruction
+    def parse_argument
+      case @token.type
+      when :register
+        value = @token.value
+
+        mode = case value[-1]?
+        when "d" then 1
+        when "w" then 2
+        when "b" then 4
+        else
+          0
+        end
+
+        unless mode == 0
+          value = value[0..-2]
+        end
+
+        read_token
+        return Register.new value, mode
+      when :label
+        value = @token.value
+        read_token
+        return Label.new value
+      when :numeric_int
+        value = @token.value
+        read_token
+        return IntegerValue.new parse_numeric_i64(value).to_u64
+      else
+        raise error "unexpected token: #{@token}, expected an argument"
+      end
     end
 
     # Parses a single size specifier
     def parse_size_specifier
-      token = read_token
-
-      case token.type
+      case @token.type
       when :size
-        return SizeSpecifier.new token.value
+        value = @token.value
+        read_token
+        return SizeSpecifier.new value
       when :numeric_int
-        return parse_numeric_i64(token.value).to_i32
+        value = parse_numeric_i64(@token.value).to_i32
+        read_token
+        return value
       else
-        raise error "unexpected token: #{token}, expected a size specifier or byte count"
+        raise error "unexpected token: #{@token}, expected a size specifier or byte count"
       end
     end
 
     # Parses a single value
     def parse_value
-      token = read_token
-
-      case token.type
+      case @token.type
       when :numeric_int
-        return IntegerValue.new parse_numeric_i64(token.value).to_u64
+        value = parse_numeric_i64(token.value).to_u64
+        read_token
+        return IntegerValue.new value
       else
         raise error "unexpected token: #{token}, expected a numeric or size specifier"
       end
@@ -143,6 +195,36 @@ module Assembler
       end
 
       token
+    end
+
+    private def skip(type, value : String? = nil)
+      token = @token
+
+      unless token.type == type
+        raise error "unexpected token: #{@token}, expected: #{type}"
+      end
+
+      if value.is_a? String
+        unless token.value == value
+          raise error "unexpected token: #{@token}, expected: #{value}"
+        end
+      end
+
+      read_token
+    end
+
+    private def assert(type, value : String? = nil)
+      token = @token
+
+      unless token.type == type
+        raise error "unexpected token: #{@token}, expected: #{type}"
+      end
+
+      if value.is_a? String
+        unless token.value == value
+          raise error "unexpected token: #{@token}, expected: #{value}"
+        end
+      end
     end
 
   end
