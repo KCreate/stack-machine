@@ -158,22 +158,6 @@ module Assembler
     end
   end
 
-  # Represents a single address
-  #
-  # ```
-  # main:
-  #   call 0x01234
-  #        ^
-  #        |
-  #        +- This is the address
-  # ```
-  class Address < Argument
-    getter address : Int64
-
-    def initialize(@address)
-    end
-  end
-
   # Represents a single size specifier
   #
   # ```
