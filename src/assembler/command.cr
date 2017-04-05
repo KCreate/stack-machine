@@ -77,7 +77,8 @@ module Assembler
         return unless errors.size == 0
 
         success "Built", "#{filename}"
-        success "Result", "\n#{result}"
+        success "Result", "#{result.size} bytes"
+        success "Output", "\n#{result}"
       end
     end
 

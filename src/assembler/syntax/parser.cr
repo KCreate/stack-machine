@@ -4,6 +4,13 @@ require "./ast.cr"
 module Assembler
   class Parser < Lexer
 
+    SIZE_BYTECOUNT = {
+      "qword" => 8_u32,
+      "dword" => 4_u32,
+      "word" => 2_u32,
+      "byte" => 1_u32,
+    } of String => UInt32
+
     def self.parse(file)
       parser = new file
       tree = parser.parse
@@ -136,8 +143,8 @@ module Assembler
       when :size
         value = @token.value
         read_token
-        byte_count = SizeSpecifier.new(value).byte_count.to_u64
-        return IntegerValue.new byte_count
+        byte_count = SIZE_BYTECOUNT[value]
+        return SizeSpecifier.new byte_count
       else
         return parse_value
       end
@@ -149,7 +156,8 @@ module Assembler
       when :size
         value = @token.value
         read_token
-        return SizeSpecifier.new(value).byte_count.to_i32
+        byte_count = SIZE_BYTECOUNT[value]
+        return SizeSpecifier.new byte_count
       when :numeric_int
         value = parse_numeric_i64(@token.value).to_i32
         read_token

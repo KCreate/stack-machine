@@ -1,5 +1,4 @@
-require "./parser.cr"
-require "./semantic.cr"
+require "./syntax/parser.cr"
 
 module Assembler
 
@@ -7,6 +6,10 @@ module Assembler
     property warnings : Array(String)
     property errors : Array(String)
     property source : String
+
+    property output : IO::Memory
+    property offset_table : Hash(String, Int64)
+    property unresolved_labels : Hash(Int64, String)
 
     # Assemble *io*
     def self.build(source)
@@ -18,6 +21,10 @@ module Assembler
     def initialize(@source)
       @errors = [] of String
       @warnings = [] of String
+      @offset = 0
+      @output = IO::Memory.new
+      @offset_table = {} of String => Int64
+      @unresolved_labels = {} of Int64 => String
     end
 
     def build
@@ -27,12 +34,8 @@ module Assembler
         parser.errors.each { |error| @errors << error }
       end
 
-      Semantic.analyse parse_tree do |warnings, errors|
-        warnings.each { |warning| @warnings << warning }
-        errors.each { |error| @errors << error }
-      end
-
-      parse_tree
+      @output << parse_tree
+      @output
     end
 
   end

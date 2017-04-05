@@ -5,5 +5,6 @@ main:
   rpush r1b
   syscall
 
-.foo qword 25
+foo:
+  jmp main
 
