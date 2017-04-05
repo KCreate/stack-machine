@@ -161,7 +161,7 @@ module Assembler
       when :numeric_int
         value = parse_numeric_i64(@token.value).to_i32
         read_token
-        return value
+        return SizeSpecifier.new value
       else
         raise error "unexpected token: #{@token}, expected a size specifier or byte count"
       end
@@ -181,7 +181,7 @@ module Assembler
 
         until @token.type == :rightbracket
           assert :numeric_int
-          value = parse_numeric_i64(@token.value).to_i8
+          value = parse_numeric_i64(@token.value).to_u8
           array.value << value
 
           read_token

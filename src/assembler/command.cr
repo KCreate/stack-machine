@@ -78,7 +78,7 @@ module Assembler
 
         success "Built", "#{filename}"
         success "Result", "#{result.size} bytes"
-        success "Output", "\n#{result}"
+        success "Output", "\n#{result.to_slice.hexdump}"
       end
     end
 

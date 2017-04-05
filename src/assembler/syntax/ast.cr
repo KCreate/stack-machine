@@ -200,6 +200,7 @@ module Assembler
   # Base class for all immediate values
   abstract class Value < Argument
     abstract def value
+    abstract def bytes
 
     def to_s(io)
       io << value
@@ -228,6 +229,12 @@ module Assembler
       return 4 if @value <= (2_u64 ** 32) - 1 # dword
       return 8
     end
+
+    def bytes
+      bytes = Bytes.new 8
+      IO::ByteFormat::LittleEndian.encode(@value, bytes)
+      bytes
+    end
   end
 
   # Represents a single Float32 value
@@ -241,6 +248,12 @@ module Assembler
     getter value : Float32
 
     def initialize(@value)
+    end
+
+    def bytes
+      bytes = Bytes.new 4
+      IO::ByteFormat::LittleEndian.encode(@value, bytes)
+      bytes
     end
   end
 
@@ -256,6 +269,12 @@ module Assembler
 
     def initialize(@value)
     end
+
+    def bytes
+      bytes = Bytes.new 8
+      IO::ByteFormat::LittleEndian.encode(@value, bytes)
+      bytes
+    end
   end
 
   # Represents a collection of bytes
@@ -266,9 +285,13 @@ module Assembler
   # .mybytes 5 [0, 1, 2, 3, 4] <-+
   # ```
   class ByteArray < Value
-    getter value : Array(Int8)
+    getter value : Array(UInt8)
 
-    def initialize(@value = [] of Int8)
+    def initialize(@value = [] of UInt8)
+    end
+
+    def bytes
+      Bytes.new @value.to_unsafe, @value.size
     end
   end
 
@@ -282,14 +305,14 @@ module Assembler
   # ```
   class Constant < ASTNode
     getter label : Label
-    getter type : SizeSpecifier | Int32
+    getter size : SizeSpecifier
     getter value : Value
 
-    def initialize(@label, @type, @value)
+    def initialize(@label, @size, @value)
     end
 
     def to_s(io)
-      io << "#{@label} : #{@type} : #{@value}"
+      io << "#{@label} : #{@size} : #{@value}"
     end
   end
 end

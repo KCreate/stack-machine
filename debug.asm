@@ -1,10 +1,3 @@
-main:
-  loadi r0b, byte, 0 ; exit code
-  loadi r1b, byte, 0 ; exit
-  rpush r0b
-  rpush r1b
-  syscall
-
-foo:
-  jmp main
-
+.myage qword 17
+.yourage word 2
+.mysuperbigconstant 10 [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
