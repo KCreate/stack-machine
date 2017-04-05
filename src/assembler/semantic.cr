@@ -35,7 +35,7 @@ module Assembler
       visited = [] of String
 
       @mod.constants = constants.reverse.reject do |constant|
-        name = constant.name
+        name = constant.label.name
         already_declared = visited.includes? name
 
         if already_declared
@@ -111,11 +111,12 @@ module Assembler
       end
 
       constants.each do |constant|
-        if visited.includes? constant.name
-          @errors << "duplicate label definition: #{constant.name}"
+        name = constant.label.name
+        if visited.includes? name
+          @errors << "duplicate label definition: #{name}"
         end
 
-        visited << constant.name
+        visited << name
       end
     end
 

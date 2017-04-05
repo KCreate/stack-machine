@@ -289,15 +289,15 @@ module Assembler
   # .mybytes 5 [0, 1, 2, 3, 4]
   # ```
   class Constant < ASTNode
-    getter name : String
+    getter label : Label
     getter type : SizeSpecifier | Int32
     getter value : Value
 
-    def initialize(@name, @type, @value)
+    def initialize(@label, @type, @value)
     end
 
     def to_s(io)
-      io << "#{@name} : #{@type} : #{@value}"
+      io << "#{@label} : #{@type} : #{@value}"
     end
   end
 end

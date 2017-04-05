@@ -81,7 +81,7 @@ module Assembler
 
     # Parses a single constant definition
     def parse_constant
-      label = @token.value
+      label = Label.new @token.value
       read_token
       size = parse_size_specifier
       value = parse_value
