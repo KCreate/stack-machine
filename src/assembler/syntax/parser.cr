@@ -11,13 +11,6 @@ module Assembler
       "byte" => 1_u32,
     } of String => UInt32
 
-    def self.parse(file)
-      parser = new file
-      tree = parser.parse
-      yield parser
-      tree
-    end
-
     def initialize(file)
       super file
       read_token
@@ -54,7 +47,7 @@ module Assembler
         when .is_a? Constant
           mod.constants << statement
         else
-          raise error "can't append node of type #{statement.class} to #{mod}"
+          raise "can't append node of type #{statement.class} to #{mod}"
         end
       end
 
@@ -82,7 +75,7 @@ module Assembler
 
         return block
       else
-        raise error "unexpected token: #{@token}"
+        raise "unexpected token: #{@token}"
       end
     end
 
@@ -123,9 +116,9 @@ module Assembler
         value = @token.value
 
         mode = case value[-1]?
-        when "d" then 1
-        when "w" then 2
-        when "b" then 4
+        when 'd' then 1
+        when 'w' then 2
+        when 'b' then 3
         else
           0
         end
@@ -163,7 +156,7 @@ module Assembler
         read_token
         return SizeSpecifier.new value
       else
-        raise error "unexpected token: #{@token}, expected a size specifier or byte count"
+        raise "unexpected token: #{@token}, expected a size specifier or byte count"
       end
     end
 
@@ -195,7 +188,7 @@ module Assembler
 
         return array
       else
-        raise error "unexpected token: #{@token}, expected a value"
+        raise "unexpected token: #{@token}, expected a value"
       end
     end
 
@@ -204,7 +197,7 @@ module Assembler
       num = value.to_i64?
 
       unless num
-        raise error "could not convert #{value} to i64"
+        raise "could not convert #{value} to i64"
       end
 
       num
@@ -214,12 +207,12 @@ module Assembler
       token = read_token
 
       unless token.type == type
-        raise error "unexpected token: #{@token}, expected: #{type}"
+        raise "unexpected token: #{@token}, expected: #{type}"
       end
 
       if value.is_a? String
         unless token.value == value
-          raise error "unexpected token: #{@token}, expected: #{value}"
+          raise "unexpected token: #{@token}, expected: #{value}"
         end
       end
 
@@ -230,12 +223,12 @@ module Assembler
       token = @token
 
       unless token.type == type
-        raise error "unexpected token: #{@token}, expected: #{type}"
+        raise "unexpected token: #{@token}, expected: #{type}"
       end
 
       if value.is_a? String
         unless token.value == value
-          raise error "unexpected token: #{@token}, expected: #{value}"
+          raise "unexpected token: #{@token}, expected: #{value}"
         end
       end
 
@@ -246,12 +239,12 @@ module Assembler
       token = @token
 
       unless token.type == type
-        raise error "unexpected token: #{@token}, expected: #{type}"
+        raise "unexpected token: #{@token}, expected: #{type}"
       end
 
       if value.is_a? String
         unless token.value == value
-          raise error "unexpected token: #{@token}, expected: #{value}"
+          raise "unexpected token: #{@token}, expected: #{value}"
         end
       end
     end

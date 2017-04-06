@@ -94,7 +94,8 @@ module Assembler
   end
 
   # Base class of all arguments
-  class Argument < ASTNode
+  abstract class Argument < ASTNode
+    abstract def bytes
   end
 
   # Represents a single label
@@ -120,6 +121,10 @@ module Assembler
 
     def to_s(io)
       io << @name
+    end
+
+    def bytes
+      Bytes.new 8
     end
   end
 
@@ -156,6 +161,25 @@ module Assembler
              end
       io << "#{@name}#{mode}"
     end
+
+    def bytes
+      regcode = Regs.from name
+      bytes = Bytes.new 1
+
+      regcode = case @mode
+      when 1
+        regcode.dword
+      when 2
+        regcode.word
+      when 3
+        regcode.byte
+      else
+        regcode.value
+      end
+
+      IO::ByteFormat::LittleEndian.encode(regcode, bytes)
+      bytes
+    end
   end
 
   # Represents a single size specifier
@@ -179,12 +203,17 @@ module Assembler
     def to_s(io)
       io << @bytecount
     end
+
+    def bytes
+      bytes = Bytes.new 4
+      IO::ByteFormat::LittleEndian.encode @bytecount, bytes
+      bytes
+    end
   end
 
   # Base class for all immediate values
   abstract class Value < Argument
     abstract def value
-    abstract def bytes
 
     def to_s(io)
       io << value

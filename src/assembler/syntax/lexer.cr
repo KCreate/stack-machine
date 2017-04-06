@@ -31,14 +31,10 @@ module Assembler
   end
 
   class Lexer < Reader
-    getter warnings : Array(String)
-    getter errors : Array(String)
     getter token : Token
 
     def initialize(file)
       super file
-      @warnings = [] of String
-      @errors = [] of String
       @token = Token.new :EOF, "", 1, 1
     end
 
@@ -187,19 +183,7 @@ module Assembler
     end
 
     private def unexpected_char(char)
-      raise error "unexpected char: #{char}, ascii: #{char.ord}"
-    end
-
-    private def warning(message)
-      msg = "#{@token.row}:#{@token.column}: #{message}"
-      @warnings << msg
-      msg
-    end
-
-    private def error(message)
-      msg = "#{@token.row}:#{@token.column}: #{message}"
-      @errors << msg
-      msg
+      raise "unexpected char: #{char}, ascii: #{char.ord}"
     end
   end
 
