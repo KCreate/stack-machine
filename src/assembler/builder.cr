@@ -133,8 +133,6 @@ module Assembler
       when "rpush", "rst" then map_args [1]
       when "rpop" then map_args [1, 4]
       when "mov", "cmp", "lt", "gt", "ult", "ugt", "not" then map_args [1, 1]
-      when "loadi"
-        puts "TOOD: Implement loadi instruction"
       when "add", "sub", "mul", "div", "idiv", "rem", "irem", "fadd", "fsub", "fmul", "fdiv", "frem", "fexp",
           "shr", "shl", "and", "xor", "nand", "or"
         map_args [1, 1, 1]
@@ -162,6 +160,17 @@ module Assembler
       when "ret" then map_args
       when "nop" then map_args
       when "syscall" then map_args
+      when "loadi"
+        assert_count mnemonic, arguments, 3
+        target = arguments[0]
+        size = arguments[1]
+        value = arguments[2]
+
+        bytesize = IO::ByteFormat::LittleEndian.decode(UInt32, size.bytes)
+
+        write_argument 1, target
+        write_argument 4, size
+        write_argument bytesize, value
       end
     end
 

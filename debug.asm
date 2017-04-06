@@ -1,5 +1,2 @@
 main:
-  jmp myfunction
-
-myfunction:
-  add r0, r0, r1
+  load r0, qword, -4
