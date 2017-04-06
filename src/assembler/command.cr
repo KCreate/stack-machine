@@ -28,7 +28,7 @@ module Assembler
     # Runs the build command
     def build(arguments : Array(String))
       filename = ""
-      output = "#{filename}.bc"
+      output = "out.bc"
 
       should_run = true
       OptionParser.parse arguments do |parser|
@@ -67,9 +67,11 @@ module Assembler
           return
         end
 
-        success "Built", "#{filename}"
-        success "Result", "#{result.size} bytes"
-        success "Output", "\n#{result.to_slice.hexdump}"
+        success "Built", "#{filename} #{result.size} bytes"
+
+        File.open output, "w" do |fd|
+          fd.write result.to_slice
+        end
       end
     end
 
