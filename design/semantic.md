@@ -143,10 +143,9 @@ If a register is surrounded with brackets it's to be interpreted as a pointer.
 
 ## Floating-point arithmetic instructions
 
-Registers passed to these instructions can only be in full or `dword` mode.
 If a full mode register is passed, the type is assumbed to be `float`, if the register
 is in DWORD mode, `double` is assumed. When trying to store in a register that has
-insufficient size, the machine will crash
+insufficient size, the result will be truncated.
 
 | Name   | Arguments       | Description                                            |
 |--------|-----------------|--------------------------------------------------------|
@@ -195,8 +194,8 @@ insufficient size, the machine will crash
 |-----------|----------------------|-----------------------------------------------------------------|
 | `read`    | reg, type, address   | Read a `type` value from `[address]` and store it in `reg`      |
 | `readc`   | reg, type, address   | Read a `type` value from `address` and store it in `reg`        |
-| `reads`   | reg, type, address   | Read a `type` value from `[address]` and push it onto the stack |
-| `readcs`  | reg, type, address   | Read a `type` value from `address` and push it onto the stack   |
+| `reads`   | type, address        | Read a `type` value from `[address]` and push it onto the stack |
+| `readcs`  | type, address        | Read a `type` value from `address` and push it onto the stack   |
 | `write`   | address, reg         | Write the contents of `reg` to `[address]`                      |
 | `writec`  | address, reg         | Write the contents of `reg` to `address`                        |
 | `writes`  | address, type        | Pop a `type` value from the stack and write it to `[address]`   |
