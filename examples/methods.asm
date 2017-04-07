@@ -2,40 +2,26 @@
 ; pseudo-code
 ;
 ; add(5, 6) * sub(20, 10)
+; exit(0)
 
 main:
 
   ; add(5, 6)
   add sp, sp, 8             ; reserve 8 bytes for the return value
+  push qword, 5             ; argument 1
+  push qword, 6             ; argument 2
+  push dword, 16            ; bytecount of all arguments
 
-  ; method arguments
-  loadi r0, qword, 5        ; write 5 into r0
-  loadi r1, qword, 6        ; write 6 into r1
-  rpush r0                  ; push r0 onto the stack
-  rpush r1                  ; push r1 onto the stack
-
-  ; argument bytesize
-  loadi r0d, dword, 16      ; write 16 into r0d
-  rpush r0d                 ; push r0d onto the stack
-
-  call _add                 ; call the add function
-  rpop r10, qword            ; pop the return value into r10
-
+  call _add                 ; call the _add function
+  rpop r0, qword            ; pop the return value into r0
 
   ; sub(20, 10)
   add sp, sp, 8             ; reserve 8 bytes for the return value
+  push qword, 20            ; argument 1
+  push qword, 10            ; argument 2
+  push dword, 16            ; bytecount of all arguments
 
-  ; method arguments
-  loadi r0, qword, 20       ; write 20 into r0
-  loadi r1, qword, 10       ; write 10 into r1
-  rpush r0                  ; push r0 onto the stack
-  rpush r1                  ; push r1 onto the stack
-
-  ; argument bytesize
-  loadi r0d, dword, 16      ; write 16 into r0d
-  rpush r0d                 ; push r0d onto the stack
-
-  call _sub                 ; call the add function
+  call _sub                 ; call the _sub function
   rpop r1, qword            ; pop the return value into r0
 
   ; multiply r0 and r1
@@ -47,8 +33,6 @@ main:
   ; exit the machine
   call _halt
 
-; Add two qword values
-;
 ; Uses r0 and r1 (callee saved)
 _add:
   rpush r0                  ; push r0 onto the stack
@@ -64,8 +48,6 @@ _add:
 
   ret
 
-; Subtract one qword value from another
-;
 ; Uses r0 and r1 (callee saved)
 _sub:
   rpush r0                  ; push r0 onto the stack
@@ -83,8 +65,6 @@ _sub:
 
 ; exit the machine with status code 0
 _halt:
-  loadi r0b, byte, 0        ; exit code
-  rpush r0b
-  loadi r0w, word, 0        ; syscall id for exit
-  rpush r0w
+  push byte, 0              ; exit code
+  push word, 0              ; syscall id (exit)
   syscall
