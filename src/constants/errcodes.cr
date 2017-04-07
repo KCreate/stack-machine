@@ -1,0 +1,13 @@
+module Constants
+
+  enum ErrorCode : UInt8
+    REGULAR_EXIT
+    STACKOVERFLOW
+    ILLEGAL_MEMORY_ACCESS
+    INVALID_INSTRUCTION
+    INVALID_REGISTER
+    INVALID_JUMP
+    OUT_OF_MEMORY
+  end
+
+end

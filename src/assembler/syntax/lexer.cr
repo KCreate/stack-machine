@@ -112,7 +112,7 @@ module Assembler
         @token.type = :numeric_double
         read
         loop do
-          case read_char
+          case read
           when .number?
             # nothing to do
           when '_'

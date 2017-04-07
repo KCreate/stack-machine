@@ -1,0 +1,42 @@
+require "./flags.cr"
+
+module Constants
+
+  enum Register : UInt8
+    {% for i in 0..59 %}
+      R{{i}}
+    {% end %}
+
+    IP
+    SP
+    FP
+    FLAGS
+
+    def qword
+      value | Flag::QWORD.value
+    end
+
+    def dword
+      value | Flag::DWORD.value
+    end
+
+    def word
+      value | Flag::WORD.value
+    end
+
+    def byte
+      value | Flag::BYTE.value
+    end
+
+    def self.from(value : String)
+      {% for name in Register.constants %}
+        if value == "{{name.downcase}}"
+          return Register::{{name}}
+        end
+      {% end %}
+
+      return Register.new 255_u8
+    end
+  end
+
+end
