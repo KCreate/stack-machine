@@ -67,7 +67,7 @@ module Assembler
           return
         end
 
-        success "Built", "#{filename} #{result.size} bytes"
+        success "Built", "#{output} #{result.size} bytes"
 
         File.open output, "w" do |fd|
           fd.write result.to_slice
