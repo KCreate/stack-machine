@@ -95,6 +95,7 @@ module Assembler
 
     private def consume_numeric
       passed_underscore = false
+      @token.type = :numeric_int
 
       loop do
         case read
@@ -107,13 +108,40 @@ module Assembler
         end
       end
 
-      number_value = @frame.to_s[0..-2]
+      if current_char == '.' && peek.number?
+        @token.type = :numeric_double
+        read
+        loop do
+          case read_char
+          when .number?
+            # nothing to do
+          when '_'
+            passed_underscore = true
+          else
+            break
+          end
+        end
+      end
+
+      if current_char == '_'
+        if read == 'f' && read == '3' && read == '2'
+          read
+          @token.type = :numeric_float
+        else
+          unexpected_char current_char
+        end
+      end
+
+      if @token.type == :numeric_float
+        number_value = @frame.to_s[0..-6]
+      else
+        number_value = @frame.to_s[0..-2]
+      end
 
       if passed_underscore
         number_value = number_value.tr "_", ""
       end
 
-      @token.type = :numeric_int
       @token.value = number_value
     end
 

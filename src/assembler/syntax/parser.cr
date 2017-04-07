@@ -167,6 +167,14 @@ module Assembler
         value = parse_numeric_i64(token.value).to_u64
         read_token
         return IntegerValue.new value
+      when :numeric_float
+        value = parse_numeric_f32(token.value)
+        read_token
+        return Float32Value.new value
+      when :numeric_double
+        value = parse_numeric_f64(token.value)
+        read_token
+        return Float64Value.new value
       when :leftbracket
         read_token
 
@@ -198,6 +206,28 @@ module Assembler
 
       unless num
         raise "could not convert #{value} to i64"
+      end
+
+      num
+    end
+
+    # Tries to parse a f32 value
+    def parse_numeric_f32(value : String)
+      num = value.to_f32?
+
+      unless num
+        raise "could not convert #{value} to f32"
+      end
+
+      num
+    end
+
+    # Tries to parse a f64 value
+    def parse_numeric_f64(value : String)
+      num = value.to_f64?
+
+      unless num
+        raise "could not convert #{value} to f64"
       end
 
       num
