@@ -15,7 +15,6 @@ For the specification on binary encoding, check the [encoding.md](./encoding.md)
 |-------------------------|--------|-------------------------------------------------------------------|
 | `REGULAR_EXIT`          | `0x00` | The machine exited normally                                       |
 | `STACKOVERFLOW`         | `0x01` | Operation would overflow the stack                                |
-| `STACKUNDERFLOW`        | `0x02` | Operation would underflow the stack (e.g `pop` on an empty stack) |
 | `ILLEGAL_MEMORY_ACCESS` | `0x03` | Memory read or write is out-of-bounds                             |
 | `INVALID_INSTRUCTION`   | `0x04` | Unknown instruction                                               |
 | `INVALID_REGISTER`      | `0x05` | Unknown register                                                  |

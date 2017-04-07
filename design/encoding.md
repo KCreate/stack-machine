@@ -73,3 +73,7 @@ in an argument.
 ## Addresses
 
 Addresses are encoded as 64-bit values.
+
+## Exit code
+
+The exit code is a `byte` value.
