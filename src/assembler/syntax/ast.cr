@@ -1,3 +1,5 @@
+require "../../constants/constants.cr"
+
 module Assembler
 
   # Base class of all ast nodes
@@ -163,7 +165,7 @@ module Assembler
     end
 
     def bytes
-      regcode = Regs.from name
+      regcode = Constants::Register.from name
       bytes = Bytes.new 1
 
       regcode = case @mode

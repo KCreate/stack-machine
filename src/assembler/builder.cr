@@ -1,8 +1,8 @@
 require "./syntax/parser.cr"
-require "./instructions.cr"
-require "./registers.cr"
+require "../constants/constants.cr"
 
 module Assembler
+  include Constants
 
   class Builder
     property output : IO::Memory
