@@ -43,6 +43,7 @@ module Assembler
     PUSHS
     LOADS
     STORE
+    PUSH
 
     READ
     READC

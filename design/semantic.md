@@ -187,6 +187,7 @@ insufficient size, the result will be truncated.
 | `pushs`  | type, offset      | Read a `type` value from `fp + offset` and push it onto the stack |
 | `loads`  | type, reg         | Read a `type` value from `fp + [reg]` and push it onto the stack  |
 | `store`  | offset, reg       | Store the contents of `reg` at `fp + offset`                      |
+| `push`   | type, value       | Push `value` onto the stack                                       |
 
 ## Memory read / write
 

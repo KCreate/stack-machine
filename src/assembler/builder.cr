@@ -160,6 +160,15 @@ module Assembler
       when "ret" then map_args
       when "nop" then map_args
       when "syscall" then map_args
+      when "push"
+        assert_count mnemonic, arguments, 2
+        size = arguments[0]
+        value = arguments[1]
+
+        bytesize = IO::ByteFormat::LittleEndian.decode(UInt32, size.bytes)
+
+        write_argument 4, size
+        write_argument bytesize, value
       when "loadi"
         assert_count mnemonic, arguments, 3
         target = arguments[0]

@@ -11,7 +11,7 @@ module Assembler
     "fadd", "fsub", "fmul", "fdiv", "frem", "fexp",
     "cmp", "lt", "gt", "ult", "ugt",
     "shr", "shl", "and", "xor", "nand", "or", "not",
-    "load", "loadr", "pushs", "loads", "store",
+    "load", "loadr", "pushs", "loads", "store", "push",
     "read", "readc", "reads", "readcs", "write", "writec", "writes", "writecs", "copy", "copyc",
     "jz", "jzr", "jmp", "jmpr", "call", "callr", "ret",
     "nop", "syscall"
