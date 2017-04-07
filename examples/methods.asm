@@ -7,7 +7,7 @@
 main:
 
   ; add(5, 6)
-  add sp, sp, 8             ; reserve 8 bytes for the return value
+  push qword, 0             ; reserve 8 bytes for the return value
   push qword, 5             ; argument 1
   push qword, 6             ; argument 2
   push dword, 16            ; bytecount of all arguments
@@ -16,7 +16,7 @@ main:
   rpop r0, qword            ; pop the return value into r0
 
   ; sub(20, 10)
-  add sp, sp, 8             ; reserve 8 bytes for the return value
+  push qword, 0             ; reserve 8 bytes for the return value
   push qword, 20            ; argument 1
   push qword, 10            ; argument 2
   push dword, 16            ; bytecount of all arguments

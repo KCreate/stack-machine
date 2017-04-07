@@ -59,32 +59,24 @@ The program below calculates the sum of `25` and `45` and saves the result in th
 
 ```assembly
 main:
-  loadi r0, qword, 25     ; load qword 25 into r0
-  loadi r1, qword, 45     ; load qword 45 into r1
+  push qword, 0         ; reserve 8 bytes for the return value
+  push qword, 25        ; argument 1
+  push qword, 45        ; argument 2
+  push dword, 16        ; bytecount of arguments
 
-  add sp, sp, 8           ; reserve 8 bytes for the return value
-  rpush r0                ; pushes r0 onto the stack
-  rpush r1                ; pushes r1 onto the stack
+  call mymethod
+  rpop r0, qword        ; the top qword of the stack is now the 8 bytes we reserved earlier
 
-  loadi r2d, dword, 16    ; load dword 16 into r2d
-  rpush r2d               ; push r2d onto the stack
+  ; more program code here
 
-  call add                ; calls add using standard calling convention
-  rpop r0, qword          ; pop return value into r0
+mymethod:
+  load r0, qword, -20   ; fp - 20 is the offset of the first argument
+  load r1, qword, -12   ; fp - 12 is the offset of the second argument
 
-  halt
-add:
-  rpush r0                ; push r0 onto the stack
-  rpush r1                ; push r1 onto the stack
+  ; do something with r0 and r1 here...
 
-  load r0, qword, -20     ; read qword at fp - 16 into r0
-  load r1, qword, -12      ; read qword at fp - 8 into r1
-  add r0, r0, r1          ; add r0 and r1 and save into r0
-  store -24, r0           ; store r0 at fp - 24
-
-  rpop r1, qword          ; restore r1 from the stack
-  rpop r0, qword          ; restore r0 from the stack
-
+  loadi r2, qword, 100  ; this is the return value
+  store -28, r2         ; fp - 28 is the address of the 8 bytes reserved earlier
   ret
 ```
 
