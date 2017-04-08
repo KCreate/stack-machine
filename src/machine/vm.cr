@@ -78,7 +78,7 @@ module VM
 
     # :ditto:
     def reg_set(reg : Register, data : Bytes)
-      target = @regs[reg.regcode, reg.bytecount]
+      target = @regs[reg.regcode * 8, reg.bytecount]
       target.copy_from data
 
       self
