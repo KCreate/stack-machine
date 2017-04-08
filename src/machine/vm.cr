@@ -114,8 +114,31 @@ module VM
 
     # Decodes the length of *instruction*
     def decode_instruction_length(instruction : Opcode)
-      puts "decoding instruction length of #{instruction}"
-      0
+      case instruction
+      when Opcode::LOADI
+        address = reg_read UInt64, Register::IP
+        size = mem_read UInt32, address + 2
+
+        #      +- Opcode
+        #      |   +- Target register
+        #      |   |   +- Size specifier
+        #      |   |   |   +- Value
+        #      |   |   |   |
+        #      v   v   v   v
+        return 1 + 1 + 4 + size
+      when Opcode::PUSH
+        address = reg_read UInt64, Register::IP
+        size = mem_read UInt32, address + 1
+
+        #      +- Opcode
+        #      |   +- Size specifier
+        #      |   |   +- Value
+        #      |   |   |
+        #      v   v   v
+        return 1 + 4 + size
+      else
+        return INSTRUCTION_LENGTH[instruction.value]
+      end
     end
 
     # :nodoc:
@@ -135,7 +158,7 @@ module VM
 
     # :ditto:
     def reg_write(reg : Register, data : Bytes)
-      illegal_register_access reg unless legal_reg reg
+      invalid_register_access reg unless legal_reg reg
       target = @regs[reg.regcode * 8, reg.bytecount]
       target.copy_from data
       self
@@ -143,7 +166,7 @@ module VM
 
     # Reads a *type* value from *register*
     def reg_read(type, reg : Register)
-      illegal_register_access reg unless legal_reg reg
+      invalid_register_access reg unless legal_reg reg
       source = @regs[reg.regcode * 8, reg.bytecount]
       IO::ByteFormat::LittleEndian.decode(type, source)
     end
@@ -188,8 +211,13 @@ module VM
     end
 
     # :nodoc:
-    private def illegal_register_access(register : Register)
+    private def invalid_register_access(register : Register)
       raise Error.new ErrorCode::INVALID_REGISTER, "Unknown register: #{register}"
+    end
+
+    # :nodoc:
+    private def invalid_instruction(instruction)
+      raise Error.new ErrorCode::INVALID_INSTRUCTION, "Unknown instruction: #{instruction}"
     end
   end
 
