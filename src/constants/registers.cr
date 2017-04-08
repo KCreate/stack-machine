@@ -47,26 +47,6 @@ module Constants
       end
     end
 
-    def overflow?
-      (byte & Flag::OVERFLOW) != 0
-    end
-
-    def parity?
-      (byte & Flag::PARITY) != 0
-    end
-
-    def zero?
-      (byte & Flag::ZERO) != 0
-    end
-
-    def negative?
-      (byte & Flag::NEGATIVE) != 0
-    end
-
-    def carry?
-      (byte & Flag::CARRY) != 0
-    end
-
     def self.from(value : String)
       {% for name in Register.constants %}
         if value == "{{name.downcase}}"
