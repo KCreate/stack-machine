@@ -12,6 +12,14 @@ module Constants
     FP
     FLAGS
 
+    def regcode
+      value & Flag::REGCODE.value
+    end
+
+    def mode
+      value & Flag::REGMODE.value
+    end
+
     def qword
       value | Flag::QWORD.value
     end
@@ -26,6 +34,37 @@ module Constants
 
     def byte
       value | Flag::BYTE.value
+    end
+
+    def bytecount
+      case mode
+      when Flag::BYTE.value then 1
+      when Flag::WORD.value then 2
+      when Flag::DWORD.value then 4
+      when Flag::QWORD.value then 8
+      else
+        0
+      end
+    end
+
+    def overflow?
+      (byte & Flag::OVERFLOW) != 0
+    end
+
+    def parity?
+      (byte & Flag::PARITY) != 0
+    end
+
+    def zero?
+      (byte & Flag::ZERO) != 0
+    end
+
+    def negative?
+      (byte & Flag::NEGATIVE) != 0
+    end
+
+    def carry?
+      (byte & Flag::CARRY) != 0
     end
 
     def self.from(value : String)
