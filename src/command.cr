@@ -84,6 +84,7 @@ module StackVM
 
       machine = VM::Machine.new memory_size
       machine.flash bytes
+      machine.start
     end
 
     # Runs the build command
