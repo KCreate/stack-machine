@@ -1,5 +1,13 @@
 module Constants
 
+  class Error < Exception
+    property code : ErrorCode
+
+    def initialize(@code, message)
+      super(message)
+    end
+  end
+
   enum ErrorCode : UInt8
     REGULAR_EXIT
     STACKOVERFLOW
