@@ -268,7 +268,7 @@ module VM
 
     # Returns true if *reg* is legal
     def legal_reg(reg : Register)
-      reg.regcode >= 0 && reg.regcode <= 64
+      reg.regcode >= 0 && reg.regcode <= 63
     end
 
     # Returns true if *address* is legal
