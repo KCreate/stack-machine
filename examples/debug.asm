@@ -1,9 +1,6 @@
 main:
-  push qword, 25
+  push qword, 0
   mov fp, sp
 
-  loads qword, -8
-
-  loadi r0, qword, -8
-
-  loadsr qword, r0
+  loadi r0, qword, 25
+  store -8, r0

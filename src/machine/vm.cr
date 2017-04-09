@@ -127,6 +127,8 @@ module VM
         op_loads ip
       when Opcode::LOADSR
         op_loadsr ip
+      when Opcode::STORE
+        op_store ip
       when Opcode::PUSH
         op_push ip
       else
@@ -400,6 +402,10 @@ module VM
     end
 
     # Executes a loads instruction
+    #
+    # ```
+    # loads qword, -8
+    # ```
     private def op_loads(ip)
       size = mem_read UInt32, ip + 1
       offset = mem_read Int64, ip + 5
@@ -410,6 +416,10 @@ module VM
     end
 
     # Executes a loadsr instruction
+    #
+    # ```
+    # loadsr qword, r0
+    # ```
     private def op_loadsr(ip)
       size = mem_read UInt32, ip + 1
       offset = Register.new mem_read UInt8, ip + 2
@@ -418,6 +428,20 @@ module VM
       address = frameptr + offset
       value = mem_read size, address
       stack_write value
+    end
+
+    # executes a store instruction
+    #
+    # ```
+    # store -8, r0
+    # ```
+    private def op_store(ip)
+      offset = mem_read Int64, ip + 1
+      source = Register.new mem_read(UInt8, ip + 9)
+      value = reg_read source
+      frameptr = reg_read UInt64, Register::FP
+      address = frameptr + offset
+      mem_write address, value
     end
 
     # Executes a push instruction
