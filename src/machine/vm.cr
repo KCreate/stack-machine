@@ -115,6 +115,8 @@ module VM
         op_rpop ip
       when Opcode::MOV
         op_mov ip
+      when Opcode::LOADI
+        op_loadi ip
       when Opcode::PUSH
         op_push ip
       else
@@ -330,6 +332,18 @@ module VM
       target = Register.new mem_read(UInt8, ip + 1)
       source = Register.new mem_read(UInt8, ip + 2)
       value = reg_read source
+      reg_write target, value
+    end
+
+    # Executes a loadi instruction
+    #
+    # ```
+    # loadi r0, qword, 25
+    # ```
+    private def op_loadi(ip)
+      target = Register.new mem_read(UInt8, ip + 1)
+      size = mem_read(UInt32, ip + 2)
+      value = mem_read size, ip + 6
       reg_write target, value
     end
 

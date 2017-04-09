@@ -1,10 +1,10 @@
 main:
-  push qword, 255
-  rpop r0, qword
+  loadi r0, qword, 25
+  loadi r0, dword, 25
+  loadi r0, word, 25
+  loadi r0, byte, 25
 
-  mov r1, r0
-  mov r2, r0
-  mov r3, r0
-  mov r4, r0
-  mov r5, r0
-  mov r6, r0
+  loadi r1,  qword, 25
+  loadi r1d, qword, 25
+  loadi r1w, qword,  25
+  loadi r1b, qword,  25
