@@ -43,6 +43,28 @@ module VM
         n = n.to_i32?
         n = 1 unless n
         @machine.cycle n
+      when "j", "jump"
+        if args.size == 0
+          return error "jump needs an address"
+        end
+
+        adr = args.shift
+        adr = adr.to_i32?(prefix: true)
+
+        unless adr
+          return error "bad address: #{adr}"
+        end
+
+        if adr < 0
+          return error "address can't be smaller than 0"
+        end
+
+        if adr >= @machine.memory.size
+          memsize = render_hex @machine.memory.size, 8, :yellow
+          return error "address is out of bounds (memorysize: #{memsize})"
+        end
+
+        @machine.reg_write Register::IP, adr.to_u64
       else
         error "unknown command: #{name}"
       end
@@ -68,6 +90,7 @@ module VM
       | q, quit  |      | quit the debugger              |
       | s, stack |      | print a hexdump of the stack   |
       | c, cycle | n    | run *n* cpu cycles (default 1) |
+      | j, jump  | adr  | jumps to *adr*                 |
       HELP
     end
 
