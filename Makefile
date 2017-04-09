@@ -1,7 +1,8 @@
 FILE = "spec/data/debug.bc"
 
-run: stackvm
-	bin/stackvm
+debug: stackvm
+	bin/stackvm build examples/debug.asm -o debug.bc
+	bin/stackvm run debug.bc -m 30
 
 stackvm:
 	mkdir -p bin
