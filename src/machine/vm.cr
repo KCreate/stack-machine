@@ -109,6 +109,8 @@ module VM
     # Executes a given instruction
     def execute(instruction : Opcode, ip)
       case instruction
+      when Opcode::RPUSH
+        op_rpush ip
       when Opcode::PUSH
         op_push ip
       else
@@ -174,6 +176,12 @@ module VM
       source = @regs[reg.regcode * 8, reg.bytecount]
       ptr = Pointer(T).new source.to_unsafe.address
       ptr[0]
+    end
+
+    # Reads all bytes from *reg*
+    def reg_read(reg : Register)
+      invalid_register_access reg unless legal_reg reg
+      @regs[reg.regcode * 8, reg.bytecount]
     end
 
     # Writes *data* to *address*
@@ -293,6 +301,17 @@ module VM
     private def op_push(ip)
       size = mem_read UInt32, ip + 1
       value = mem_read size, ip + 5
+      stack_write value
+    end
+
+    # Execute a rpush instruction
+    #
+    # ```
+    # rpush r0
+    # ```
+    private def op_rpush(ip)
+      reg = Register.new mem_read(UInt8, ip + 1)
+      value = reg_read reg
       stack_write value
     end
   end
