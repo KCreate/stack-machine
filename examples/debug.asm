@@ -1,2 +1,3 @@
 main:
-  add r0, r1, r2
+  push byte, 25
+  push word, 300

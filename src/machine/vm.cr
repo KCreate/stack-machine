@@ -69,7 +69,6 @@ module VM
 
       while @running
         cycle
-        @running = false
       end
 
       self
@@ -79,7 +78,7 @@ module VM
     def cycle
       instruction = fetch
       old_ip = reg_read UInt64, Register::IP
-      execute instruction
+      execute instruction, old_ip
 
       # Only increment the IP if the last instruction didn't modify it
       if old_ip == reg_read UInt64, Register::IP
@@ -108,8 +107,13 @@ module VM
     end
 
     # Executes a given instruction
-    def execute(instruction : Opcode)
-      puts "executing #{instruction}"
+    def execute(instruction : Opcode, ip)
+      case instruction
+      when Opcode::PUSH
+        op_push ip
+      else
+        invalid_instruction instruction
+      end
     end
 
     # Decodes the length of *instruction*
@@ -165,10 +169,11 @@ module VM
     end
 
     # Reads a *type* value from *register*
-    def reg_read(type, reg : Register)
+    def reg_read(x : T.class, reg : Register) forall T
       invalid_register_access reg unless legal_reg reg
       source = @regs[reg.regcode * 8, reg.bytecount]
-      IO::ByteFormat::LittleEndian.decode(type, source)
+      ptr = Pointer(T).new source.to_unsafe.address
+      ptr[0]
     end
 
     # Writes *data* to *address*
@@ -186,10 +191,70 @@ module VM
     end
 
     # Reads a *type* value from *address*
-    def mem_read(type, address)
-      illegal_memory_access address unless legal_address address
+    def mem_read(x : T.class, address) forall T
+      illegal_memory_access address unless legal_address address + sizeof(T)
       source = @memory + address
-      IO::ByteFormat::LittleEndian.decode(type, source)
+      ptr = Pointer(T).new source.to_unsafe.address
+      ptr[0]
+    end
+
+    # Reads *count* bytes from *address*
+    def mem_read(count, address)
+      illegal_memory_access address unless legal_address address + count
+      @memory[address, count]
+    end
+
+    # Pushes *value* onto the stack
+    def stack_write(data : Bytes)
+      sp = reg_read UInt64, Register::SP
+      mem_write sp, data
+      sp += data.size
+      reg_write Register::SP, sp
+    end
+
+    # Pushes *value* onto the stack
+    def stack_write(value : T) forall T
+      value = Slice(T).new 1, value
+      size = sizeof(T)
+      ptr = Pointer(UInt8).new value.to_unsafe.address
+      bytes = Bytes.new ptr, size
+      stack_write bytes
+    end
+
+    # Reads *count* bytes from the stack
+    def stack_peek(count)
+      sp = reg_read UInt64, Register::SP
+      address = sp - count
+      mem_read count, address
+    end
+
+    # Reads a *T* value from the stack
+    def stack_peek(x : T.class) forall T
+      sp = reg_read UInt64, Register::SP
+      size = sizeof(T)
+      address = sp - size
+      ptr = @memory[address, size].to_unsafe.as(T)
+      ptr[0]
+    end
+
+    # Pops *count* bytes off the stack
+    def stack_pop(count)
+      sp = reg_read UInt64, Register::SP
+      address = sp - count
+      bytes = mem_read count, address
+      reg_write Register::SP, sp - count
+      bytes
+    end
+
+    # Pops a *T* value off the stack
+    def stack_pop(x : T.class) forall T
+      sp = reg_read UInt64, Register::SP
+      size = sizeof(T)
+      address = sp - size
+      ptr = @memory[address, size].to_unsafe.as(T)
+      value = ptr[0]
+      reg_write Register::SP, sp - size
+      value
     end
 
     # Returns true if *reg* is legal
@@ -218,6 +283,17 @@ module VM
     # :nodoc:
     private def invalid_instruction(instruction)
       raise Error.new ErrorCode::INVALID_INSTRUCTION, "Unknown instruction: #{instruction}"
+    end
+
+    # Execute a push instruction
+    #
+    # ```
+    # push qword, 5
+    # ```
+    private def op_push(ip)
+      size = mem_read UInt32, ip + 1
+      value = mem_read size, ip + 5
+      stack_write value
     end
   end
 
