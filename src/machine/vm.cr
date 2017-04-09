@@ -113,6 +113,8 @@ module VM
         op_rpush ip
       when Opcode::RPOP
         op_rpop ip
+      when Opcode::MOV
+        op_mov ip
       when Opcode::PUSH
         op_push ip
       else
@@ -296,7 +298,7 @@ module VM
       raise Error.new ErrorCode::INVALID_INSTRUCTION, "Unknown instruction: #{instruction}"
     end
 
-    # Execute a rpush instruction
+    # Executes a rpush instruction
     #
     # ```
     # rpush r0
@@ -307,7 +309,7 @@ module VM
       stack_write value
     end
 
-    # Execute a rpop instruction
+    # Executes a rpop instruction
     #
     # ```
     # rpop r0, qword
@@ -319,7 +321,19 @@ module VM
       reg_write reg, value
     end
 
-    # Execute a push instruction
+    # Executes a mov instruction
+    #
+    # ```
+    # mov r0, r1
+    # ```
+    private def op_mov(ip)
+      target = Register.new mem_read(UInt8, ip + 1)
+      source = Register.new mem_read(UInt8, ip + 2)
+      value = reg_read source
+      reg_write target, value
+    end
+
+    # Executes a push instruction
     #
     # ```
     # push qword, 5
