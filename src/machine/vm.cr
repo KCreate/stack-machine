@@ -166,6 +166,7 @@ module VM
     def reg_write(reg : Register, data : Bytes)
       invalid_register_access reg unless legal_reg reg
       target = @regs[reg.regcode.to_i64 * 8, reg.bytecount]
+      target.to_unsafe.clear reg.bytecount
       target.copy_from data
       self
     end
