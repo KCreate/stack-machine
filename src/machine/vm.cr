@@ -119,6 +119,8 @@ module VM
         op_loadi ip
       when Opcode::RST
         op_rst ip
+      when Opcode::LOAD
+        op_load ip
       when Opcode::PUSH
         op_push ip
       else
@@ -345,7 +347,7 @@ module VM
     # ```
     private def op_loadi(ip)
       target = Register.new mem_read(UInt8, ip + 1)
-      size = mem_read(UInt32, ip + 2)
+      size = mem_read UInt32, ip + 2
       value = mem_read size, ip + 6
       reg_write target, value
     end
@@ -358,6 +360,21 @@ module VM
     private def op_rst(ip)
       reg = Register.new mem_read(UInt8, ip + 1)
       reg_write reg, 0
+    end
+
+    # Executes a load instruction
+    #
+    # ```
+    # load r0, qword, -20
+    # ```
+    private def op_load(ip)
+      reg = Register.new mem_read(UInt8, ip + 1)
+      size = mem_read UInt32, ip + 2
+      offset = mem_read(Int64, ip + 6)
+      frameptr = reg_read UInt64, Register::FP
+      address = frameptr + offset
+      value = mem_read size, address
+      reg_write reg, value
     end
 
     # Executes a push instruction
