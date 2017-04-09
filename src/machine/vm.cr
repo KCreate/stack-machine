@@ -165,7 +165,7 @@ module VM
     # :ditto:
     def reg_write(reg : Register, data : Bytes)
       invalid_register_access reg unless legal_reg reg
-      target = @regs[reg.regcode * 8, reg.bytecount]
+      target = @regs[reg.regcode.to_i64 * 8, reg.bytecount]
       target.copy_from data
       self
     end
@@ -173,7 +173,7 @@ module VM
     # Reads a *type* value from *register*
     def reg_read(x : T.class, reg : Register) forall T
       invalid_register_access reg unless legal_reg reg
-      source = @regs[reg.regcode * 8, reg.bytecount]
+      source = @regs[reg.regcode.to_i64 * 8, reg.bytecount]
       ptr = Pointer(T).new source.to_unsafe.address
       ptr[0]
     end
@@ -181,7 +181,7 @@ module VM
     # Reads all bytes from *reg*
     def reg_read(reg : Register)
       invalid_register_access reg unless legal_reg reg
-      @regs[reg.regcode * 8, reg.bytecount]
+      @regs[reg.regcode.to_i64 * 8, reg.bytecount]
     end
 
     # Writes *data* to *address*
