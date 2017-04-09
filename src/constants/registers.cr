@@ -21,19 +21,19 @@ module Constants
     end
 
     def qword
-      value | Flag::QWORD.value
+      Register.new value | Flag::QWORD.value
     end
 
     def dword
-      value | Flag::DWORD.value
+      Register.new value | Flag::DWORD.value
     end
 
     def word
-      value | Flag::WORD.value
+      Register.new value | Flag::WORD.value
     end
 
     def byte
-      value | Flag::BYTE.value
+      Register.new value | Flag::BYTE.value
     end
 
     def bytecount

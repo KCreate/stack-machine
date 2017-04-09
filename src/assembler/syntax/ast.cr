@@ -170,11 +170,11 @@ module Assembler
 
       regcode = case @mode
       when 1
-        regcode.dword
+        regcode.dword.value
       when 2
-        regcode.word
+        regcode.word.value
       when 3
-        regcode.byte
+        regcode.byte.value
       else
         regcode.value
       end
