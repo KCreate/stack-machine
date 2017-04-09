@@ -192,7 +192,7 @@ module VM
 
     # :ditto:
     def mem_write(address, data : Bytes)
-      illegal_memory_access address unless legal_address address
+      illegal_memory_access address unless legal_address address + data.size
       target = @memory + address
       target.copy_from data
       self
