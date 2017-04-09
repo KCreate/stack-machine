@@ -117,6 +117,8 @@ module VM
         op_mov ip
       when Opcode::LOADI
         op_loadi ip
+      when Opcode::RST
+        op_rst ip
       when Opcode::PUSH
         op_push ip
       else
@@ -346,6 +348,16 @@ module VM
       size = mem_read(UInt32, ip + 2)
       value = mem_read size, ip + 6
       reg_write target, value
+    end
+
+    # Executes a rst instruction
+    #
+    # ```
+    # rst r0
+    # ```
+    private def op_rst(ip)
+      reg = Register.new mem_read(UInt8, ip + 1)
+      reg_write reg, 0
     end
 
     # Executes a push instruction

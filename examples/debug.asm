@@ -1,10 +1,10 @@
 main:
-  loadi r0, qword, 25
-  loadi r0, dword, 25
-  loadi r0, word, 25
-  loadi r0, byte, 25
+  loadi r0, qword, 255
 
-  loadi r1,  qword, 25
-  loadi r1d, qword, 25
-  loadi r1w, qword,  25
-  loadi r1b, qword,  25
+  mov r1, r0
+  mov r2, r0
+  mov r3, r0
+
+  rst r1
+  rst r2
+  rst r3
