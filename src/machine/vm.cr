@@ -173,6 +173,7 @@ module VM
       invalid_register_access reg unless legal_reg reg
       target = @regs[reg.regcode.to_i64 * 8, reg.bytecount]
       target.to_unsafe.clear reg.bytecount
+      data = data[0, target.size] if data.size > target.size
       target.copy_from data
       self
     end
