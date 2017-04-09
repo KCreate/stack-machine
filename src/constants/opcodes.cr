@@ -38,8 +38,8 @@ module Constants
 
     LOAD
     LOADR
-    PUSHS
     LOADS
+    LOADSR
     STORE
     PUSH
 
@@ -115,8 +115,8 @@ module Constants
 
     14, # load
     7, # loadr
-    13, # pushs
-    6, # loads
+    13, # loads
+    6, # loadsr
     10, # store
     0, # push (this is calculated in the vm itself)
 
