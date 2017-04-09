@@ -3,6 +3,7 @@ require "option_parser"
 
 require "./assembler/builder.cr"
 require "./machine/vm.cr"
+require "./machine/debugger.cr"
 
 module StackVM
   include Assembler
@@ -33,11 +34,13 @@ module StackVM
     def run(arguments : Array(String))
       filename = ""
       memory_size = 2 ** 16 # 65'536 bytes
+      debug_mode = false
 
       should_run = true
       OptionParser.parse arguments do |parser|
         parser.banner = "Usage: run filename [switches]"
         parser.on "-h", "--help", "show help" { puts parser; should_run = false }
+        parser.on "-d", "--debugger", "enable debugger" { debug_mode = true }
         parser.on "-m SIZE", "--memory=SIZE", "set memory size" do |arg|
           arg = arg.to_i32?
 
@@ -84,7 +87,13 @@ module StackVM
 
       machine = VM::Machine.new memory_size
       machine.flash bytes
-      machine.start
+
+      if debug_mode
+        dbg = VM::Debugger.new machine
+        dbg.start
+      else
+        machine.start
+      end
     end
 
     # Runs the build command
