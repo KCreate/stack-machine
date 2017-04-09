@@ -121,6 +121,8 @@ module VM
         op_rst ip
       when Opcode::LOAD
         op_load ip
+      when Opcode::LOADR
+        op_loadr ip
       when Opcode::PUSH
         op_push ip
       else
@@ -371,6 +373,22 @@ module VM
       reg = Register.new mem_read(UInt8, ip + 1)
       size = mem_read UInt32, ip + 2
       offset = mem_read(Int64, ip + 6)
+      frameptr = reg_read UInt64, Register::FP
+      address = frameptr + offset
+      value = mem_read size, address
+      reg_write reg, value
+    end
+
+    # Executes a loadr instruction
+    #
+    # ```
+    # loadr r0, qword, r1
+    # ```
+    private def op_loadr(ip)
+      reg = Register.new mem_read(UInt8, ip + 1)
+      size = mem_read UInt32, ip + 2
+      offset = Register.new mem_read(UInt8, ip + 6)
+      offset = reg_read Int64, offset
       frameptr = reg_read UInt64, Register::FP
       address = frameptr + offset
       value = mem_read size, address
