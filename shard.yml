@@ -6,4 +6,8 @@ authors:
 
 crystal: 0.21.1
 
+dependencies:
+  sdl:
+      github: ysbaddaden/sdl.cr
+
 license: MIT
