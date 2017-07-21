@@ -4,5 +4,6 @@ module Constants
     SLEEP
     WRITE
     PUTS
+    READ
   end
 end
