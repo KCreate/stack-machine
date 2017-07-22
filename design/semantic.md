@@ -243,6 +243,7 @@ syscall id onto the stack. The syscall id is a `word`.
 | `sleep` | `0x01` | seconds        | Sleeps for `seconds`. `seconds` is a `float64`              |
 | `write` | `0x02` | address, count | Writes `count` bytes from `address` into stdout             |
 | `puts`  | `0x03` | reg            | Prints the contents of `reg`                                |
+| `read`  | `0x04` | reg            | Reads one character from stdin and saves it to `reg`        |
 
 Return values of syscalls are pushed onto the stack. Different syscalls may produce different return values.
 
