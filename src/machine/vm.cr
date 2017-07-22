@@ -1083,9 +1083,10 @@ module VM
         value = reg_read Int32, reg
         STDOUT.puts "#{value}"
       when Syscall::READ
+        reg = Register.new stack_pop UInt8
         char = STDIN.raw &.read_char
         if char.is_a?(Char)
-          reg_write Register::R0.byte, char.ord
+          reg_write reg, char.ord
         end
       else
         invalid_syscall id
